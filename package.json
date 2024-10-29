@@ -1,0 +1,27 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "An interactive postgreSQl based booktracker.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmeyGaikar/shelfwise.git"
+  },
+  "author": "Amey Gaikar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmeyGaikar/shelfwise/issues"
+  },
+  "homepage": "https://github.com/AmeyGaikar/shelfwise#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "bootstrap": "^5.3.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "pg": "^8.13.1"
+  }
+}
