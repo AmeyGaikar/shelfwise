@@ -80,9 +80,9 @@
           let authorName = bookData.author_name[0];
           let bookTitle = bookData.title;
           let bookCoverId = bookData.cover_i;
-          // let bookIsbn = bookData.isbn[0];
+          let bookIsbn = bookData.isbn;
 
-
+          // console.log(bookIsbn[0]);
           const item = $('<a>', {
             href: ``,
             class: 'list-group-item list-group-item-action d-flex gap-3 py-3 align-items-center',
@@ -91,6 +91,7 @@
             <div class="d-flex flex-column gap-2 w-100 pb-3">
                 <h6 class="mb-0"> ${bookTitle} </h6>
                 <p class="mb-0 opacity-75">by &nbsp ${authorName} </p>
+                <p class="mb-0 opacity-75">ISBN &nbsp ${bookIsbn[0]} </p>
             </div>
            `
           });
