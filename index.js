@@ -22,7 +22,7 @@ res.render("index.ejs");
 
 // getting the homepage
 app.get("/homepage", (req,res) => {
-    res.send("route ok!")
+    res.render("homepage.ejs")
 })
 
 
