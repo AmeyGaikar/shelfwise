@@ -13,24 +13,14 @@
   <!-- search button  -->
   <div class="container d-flex flex-column">
     <input id="searchInput" class="form-control p-2 my-3 rounded-pill border-black" type="search" placeholder="search for books, author name or isbn code...">
-
     <p id="searchResults" class="mx-auto">Seach Results :</p>
   </div>
 
   <!-- search result list  -->
   <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-1 align-items-center justify-content-center">
     <div id="resultsContainer" class="list-group">
-
-      <!-- <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-        <img src="/images/test-img-folder/0385472579-S.jpg" alt="twbs" class=" flex-shrink-0" style="height: auto; max-width: 20%;">
-        <div class="d-flex gap-2 w-100 justify-content-center align-items-center pb-3">
-          <div>
-            <h6 class="mb-0">Name of the book</h6>
-            <p class="mb-0 opacity-75">Name of the author</p>
-          </div>
-        </div>
-      </a> -->
-
+      <!-- search results go here  -->
+      <form action=""></form>
     </div>
   </div>
 
@@ -43,6 +33,7 @@
   <!-- search bar functionality  -->
   <script>
     jQuery(document).ready(function() {
+
       let timeout = null;
       $("#searchResults").hide();
       jQuery('#searchInput').on('input', function() {
@@ -84,18 +75,23 @@
 
           // console.log(bookIsbn[0]);
           const item = $('<a>', {
-            href: ``,
             class: 'list-group-item list-group-item-action d-flex gap-3 py-3 align-items-center',
             html: `
             <img src='https://covers.openlibrary.org/b/id/${bookCoverId}-S.jpg' alt="coverImg" class="flex-shrink-0" style= "width: 50px">  
             <div class="d-flex flex-column gap-2 w-100 pb-3">
                 <h6 class="mb-0"> ${bookTitle} </h6>
                 <p class="mb-0 opacity-75">by &nbsp ${authorName} </p>
-                <p class="mb-0 opacity-75">ISBN &nbsp ${bookIsbn[0]} </p>
+                <form action="book/${bookIsbn[0]}" method='POST'> 
+                 <button type="submit" class="btn btn-custom rounded-pill btn-sm"> Add Book </button> 
+                </form>                
             </div>
            `
           });
           $('#resultsContainer').append(item);
+
+          $('.list-group-item').click (function() {
+            console.log(this.data)
+          })
         });
       }
     })
