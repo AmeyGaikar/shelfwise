@@ -44,7 +44,6 @@ app.get("/homepage", async (req, res) => {
     console.error("Homepage Error", error);
   }
 
-  console.log(bookData);
   res.render("homepage.ejs", {
     bookData: bookData,
   });
@@ -81,8 +80,8 @@ app.post("/bookAdded", async (req, res) => {
   const rating = req.body.rating;
   try {
     const query = await db.query(
-      "INSERT INTO books (title, cover, author, reviewtext, rating) VALUES($1, $2, $3, $4, $5)",
-      [bookTitle, bookCover, bookAuthor, reviewText, rating]
+      "INSERT INTO books (title, cover, author, reviewtext, rating, bookaddopt) VALUES($1, $2, $3, $4, $5, $6)",
+      [bookTitle, bookCover, bookAuthor, reviewText, rating, bookAddOpt]
     );
   } catch (error) {
     console.error(error);
@@ -91,4 +90,34 @@ app.post("/bookAdded", async (req, res) => {
   res.redirect("/homepage");
 });
 
+app.post("/edit", async (req, res) => {
+  console.log(req.body);
 
+  const review = req.body.editedReview;
+  const trackOption = req.body.bookAddOpt;
+  const rating = req.body.editedRating;
+  const postId = parseInt(req.body.postId);
+
+  try {
+    const query = await db.query(
+      " UPDATE books SET (reviewtext, rating, bookaddopt) = ($1, $2, $3) WHERE id=$4",
+      [review, rating, trackOption, postId]
+    );
+
+    res.redirect("/homepage");
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.post("/delete", async (req, res) => {
+  console.log(req.body);
+  const id = req.body.deletePostId;
+  try {
+    const query = await db.query(" DELETE FROM books WHERE id=$1", [id]);
+
+    res.redirect("/homepage");
+  } catch (error) {
+    console.error(error);
+  }
+});

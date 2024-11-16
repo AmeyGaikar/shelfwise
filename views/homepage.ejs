@@ -47,10 +47,19 @@
       <div class="col-lg-6">
         <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3"> <%= book.title %> </h1>
         <form action="/edit" method="post">
+          <input type="hidden" name="postId" value="<%= book.id %>">
+
           <input id="reviewEdit<%= book.id %>" name="editedReview" rows="5" hidden="true" value="<%= book.reviewtext %>">
-          <p id="reviewTextPlaceholder<%= book.id %>" class="lead"> <%= book.reviewtext %> </p>
-          <p> <%= book.bookAddOpt %> </p>
-          Rated: <%= book.rating %> <br>
+          <p id="reviewTextOG<%= book.id %>" class="lead"> <%= book.reviewtext %> </p>
+
+          <select class="form-select" id="selectTrack<%= book.id %>" aria-label="Default select example" name="bookAddOpt" name="selectData" hidden="true">
+            <option style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" value="want to read">Want to read</option>
+            <option style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" value="Already read">Already Read</option>
+            <option style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" value="Ongoing">Ongoing</option>
+          </select>
+          <p id="selectTrackOG<%= book.id %>"> <%= book.bookaddopt %> </p>
+
+          <p id="rating<%= book.id %>" class="ratingValue"> Rated: <%= book.rating %> </p>
           <div class="star-rating" id="starContainer<%= book.id %>">
             <i class="fas fa-star" data-value="1"></i>
             <i class="fas fa-star" data-value="2"></i>
@@ -59,6 +68,7 @@
             <i class="fas fa-star" data-value="5"></i>
           </div>
 
+          <input id="ratingPlaceholder<%= book.id %>" name="editedRating" hidden="true"> </input>
           <div class="starPlaceholder<%= book.id %>" hidden="true">
             <i class="fas fa-star p-holder" data-value="1"></i>
             <i class="fas fa-star p-holder" data-value="2"></i>
@@ -69,6 +79,10 @@
           <button type="submit" id="editIcon<%= book.id %>" hidden="true"> <i class="fa-solid fa-check"></i> </button> <br>
         </form>
         <button class="btn btn-primary mt-2" onclick="handler('<%=book.id%>')"> Edit </button>
+        <form action="/delete" method="post">
+          <input type="hidden" name="deletePostId" value="<%= book.id %>">
+          <button class="btn btn-danger"> Delete </button>
+        </form>
       </div>
     </div>
   </div>
@@ -96,26 +110,32 @@
       $('#reviewEdit' + id).removeAttr("hidden");
       $('#editIcon' + id).removeAttr("hidden");
       $('.starPlaceholder' + id).removeAttr("hidden");
-      $('#reviewTextPlaceholder' + id).attr("hidden", true);
+      $('#selectTrack' + id).removeAttr("hidden");
+      $('#selectTrackOG' + id).attr("hidden", true);
+      $('#reviewTextOG' + id).attr("hidden", true);
       $('#starContainer' + id).attr("hidden", true);
     }
 
     jQuery(document).ready(function() {
       <% locals.bookData.forEach(book => { %>
       starRating("#starContainer<%= book.id %>", <%= book.rating %>);
-
+      // Scoped click handler for each book's stars in the starPlaceholder
       $(".starPlaceholder<%= book.id %> .p-holder").click(function() {
-      var starClicked = $(this).data("value");
-      editStar(starClicked, " <%= book.id %>");
-    });
+        var starClicked = $(this).data("value"); // Get the value of the clicked star
+        editStar(starClicked, "<%= book.id %>"); // Pass starClicked and book ID to editStar
+      });
 
-  <% }) %>
+      <% }) %>
 
+      // Function to color stars up to the clicked one
       function editStar(starClicked, bookId) {
+        // Target only the stars within the specific book's placeholder
         $(".starPlaceholder" + bookId + " .p-holder").each(function() {
-          var starVal = $(this).data("value");
-          console.log(starVal);
-          $(this).toggleClass('ticked', starValue <= starClicked);
+          var starValue = $(this).data("value");
+          console.log(starClicked);
+          $(this).toggleClass('ticked', starValue <= starClicked); // Toggle class based on star value
+          $(".ratingValue").text(`Rated: ${starClicked}`);
+          $("#ratingPlaceholder" + bookId).val(starClicked);
         });
       }
 
@@ -132,10 +152,10 @@
           jQuery('#resultsContainer').empty();
           $("#searchResults").hide();
         }
-      })
+      });
 
       function fetchResults(query) {
-        let apiUrl = `https://openlibrary.org/search.json?q=${query}&limit=5`
+        let apiUrl = `https://openlibrary.org/search.json?q=${query}&limit=5`;
 
         jQuery.ajax({
           url: apiUrl,
@@ -144,7 +164,7 @@
             displayResults(data.docs);
           },
           error: function(error) {
-            console.error('request failed', err.statusText);
+            console.error('request failed', error.statusText);
           }
         });
       }
@@ -161,24 +181,22 @@
           const item = $('<a>', {
             class: 'list-group-item list-group-item-action d-flex gap-3 py-3 align-items-center',
             html: `
-            <img src='https://covers.openlibrary.org/b/id/${bookCoverId}-S.jpg' alt="coverImg" class="flex-shrink-0" style= "width: 50px">  
-            <div class="d-flex flex-column gap-2 w-100 pb-3">
+              <img src='https://covers.openlibrary.org/b/id/${bookCoverId}-S.jpg' alt="coverImg" class="flex-shrink-0" style= "width: 50px">  
+              <div class="d-flex flex-column gap-2 w-100 pb-3">
                 <h6 class="mb-0"> ${bookTitle} </h6>
                 <p class="mb-0 opacity-75">by &nbsp ${authorName} </p>
                 <form action="book/${bookIsbn[0]}" method='POST'> 
-                 <button type="submit" class="btn btn-custom rounded-pill btn-sm"> Add Book </button> 
+                  <button type="submit" class="btn btn-custom rounded-pill btn-sm"> Add Book </button> 
                 </form>                
-            </div>
-           `
+              </div>
+            `
           });
           $('#resultsContainer').append(item);
-
-          $('.list-group-item').click(function() {
-          })
         });
       }
-    })
+    });
   </script>
+
 
 
 </body>
